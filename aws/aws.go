@@ -109,3 +109,23 @@ func (a *AWS) ReadFile(key string) *bytes.Buffer {
 
 	return bytes.NewBuffer(body)
 }
+
+// Delete a file uploaded to s3 bucket
+func (a *AWS) DeleteFile(key string) {
+
+	svc := a.CreateSession()
+
+	input := &s3.DeleteObjectInput{
+		Bucket: aws.String(a.config.BucketName), // s3 bucket name
+		Key:    aws.String(key),                 // file name
+	}
+
+	// Delete the object
+	deletedObject, err := svc.DeleteObject(input)
+	if err != nil {
+		a.logger.Error(err)
+		os.Exit(1)
+	}
+
+	a.logger.Info("Deleted object --> ", deletedObject)
+}
